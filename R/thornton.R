@@ -38,7 +38,7 @@ class(hiv$any)
 
 permuteHIV(hiv, random = FALSE)
 
-iterations <- 1000
+iterations <- 10000
 
 permutation <- tibble(
   iteration = c(seq(iterations)), 
@@ -55,4 +55,13 @@ permutation <- permutation %>%
 
 p_value <- permutation %>% 
   filter(iteration == 1) %>% 
+  
+# p-values for 100 1,000 10,000 iretations are 0.1, 0.01, 0.001
+
+
+
+  
+  
+  
+  
   pull(rank)/iterations
