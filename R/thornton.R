@@ -1,6 +1,12 @@
+######################################################
+# Name: Weiyi Li
+# Project: Assignment 3 -- Thornton with regression
+# 05/20/2020
+######################################################
+
+
 library(tidyverse)
 library(haven)
-library(tidyverse)
 
 read_data <- function(df)
 {
@@ -9,36 +15,35 @@ read_data <- function(df)
   df <- read_dta(full_path)
   return(df)
 }
+
 hiv <- read_data("thornton_hiv.dta")
+
 
 # creating the permutations
 
 tb <- NULL
 
-ols_hiv <- lm(formula = got ~ any + male, data = hiv)  
-coefficients(ols_hiv)
-
 permuteHIV <- function(df, random = TRUE){
   tb <- df
   first_half <- ceiling(nrow(tb)/2)
   second_half <- nrow(tb) - first_half
-
+  
   if(random == TRUE){
     tb <- tb %>%
       sample_frac(1) %>%
       mutate(any = c(rep(1, first_half), rep(0, second_half)))
   }
-  ols <- ols_hiv
+  
+  ols <- lm(got ~ any + male, data = tb)
   delta <- ols$coefficients[[2]]
   ate <- delta
+  
   return(ate)
 }
 
-class(hiv$any)
-
 permuteHIV(hiv, random = FALSE)
 
-iterations <- 10000
+iterations <- 1000
 
 permutation <- tibble(
   iteration = c(seq(iterations)), 
@@ -55,13 +60,13 @@ permutation <- permutation %>%
 
 p_value <- permutation %>% 
   filter(iteration == 1) %>% 
-  
+  pull(rank)/iterations
+
 # p-values for 100 1,000 10,000 iretations are 0.1, 0.01, 0.001
 
-
-
+class(permutation$ate)
+frequency(permutation$ate)
+hist(permutation$ate, breaks = 100)
   
   
   
-  
-  pull(rank)/iterations
